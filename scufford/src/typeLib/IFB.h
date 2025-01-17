@@ -13,7 +13,7 @@ protected:
     GlobalOutputs* outputs;
     std::map<std::string, std::string> connections;
     std::vector<std::string> next;
-
+    std::string pathToESSTEE;
     std::string FBname;
 
     virtual void execute(GlobalOutputs* outputs) = 0;
@@ -25,6 +25,7 @@ public:
         std::vector<std::string> next,
         std::string FBname);
     void call(GlobalOutputs* outputs);
+    void setPathToESSTEE(std::string path);
     void addNext(std::string newNext);
     void setConnections(std::map<std::string,std::string> conn);
     std::vector<std::string> getNext();

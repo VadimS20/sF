@@ -18,16 +18,17 @@
 #include "./src/typeLib/IFB.h"
 #include "./src/typeLib/modules/FBSumOfTwo.h"
 #include "./src/typeLib/modules/FBConsoleOut.h"
+#include "./src/typeLib/modules/FBSt.h"
 
 
-void graphExecution(std::string xmlFile, std::atomic_bool& isGraph){
+void graphExecution(std::string xmlFile, std::atomic_bool& isGraph, std::string& pathToEsstee){
     std::pair<std::vector<IFB*>, GlobalOutputs*> pair;
 
     std::cout<<"graph"<<"\n";
     if(xmlFile.find(".fboot")!=std::string::npos){
-        pair=Parser::parseFboot(xmlFile);
+        pair=Parser::parseFboot(xmlFile,pathToEsstee);
     }else{
-        pair=Parser::parse(xmlFile);
+        pair=Parser::parse(xmlFile,pathToEsstee);
     }    
     auto all=pair.first;
     auto agregtor=pair.second;
@@ -39,11 +40,11 @@ void graphExecution(std::string xmlFile, std::atomic_bool& isGraph){
     graph->~Graph();
 }
 
-void runApp(int &port, std::string &pathToFile){
+void runApp(int &port, std::string &pathToFile, std::string &pathToEsstee){
     std::thread appThread;
     std::atomic_bool isGraph(true);
     if (pathToFile != ""){
-        appThread = std::thread(graphExecution, pathToFile, std::ref(isGraph));
+        appThread = std::thread(graphExecution, pathToFile, std::ref(isGraph), pathToEsstee);
     }
 
     while (1)
@@ -58,7 +59,7 @@ void runApp(int &port, std::string &pathToFile){
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
             isGraph = true;
-            appThread = std::thread(graphExecution, "received_file.xml", std::ref(isGraph));
+            appThread = std::thread(graphExecution, "received_file.xml", std::ref(isGraph),pathToEsstee);
         }
         if (std::filesystem::exists("./received_file.fboot")) {
             std::cerr<<"File received"<<std::endl;
@@ -68,7 +69,7 @@ void runApp(int &port, std::string &pathToFile){
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
             isGraph = true;
-            appThread = std::thread(graphExecution, "received_file.fboot", std::ref(isGraph));
+            appThread = std::thread(graphExecution, "received_file.fboot", std::ref(isGraph),pathToEsstee);
         }
         serv.join();
     }
@@ -77,12 +78,16 @@ void runApp(int &port, std::string &pathToFile){
 int main(int argc, char *argv[]) {
     std::string pathToFile;
     int port;
-
+    remove("received_file.xml");
     argparse::ArgumentParser program("scufford");
     
     program.add_argument("-f", "--file")
         .default_value("")
-        .help("input .xml filename");
+        .help("input .xml/.fboot filename");
+
+    program.add_argument("-esstee")
+        .default_value("")
+        .help("input esstee path");    
 
     program.add_argument("-p", "--port")
         .default_value(61499)
@@ -98,9 +103,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    std::string pathToEsstee;
+    pathToEsstee = program.get("-esstee");
     pathToFile = program.get("-f");
     port = program.get<int>("-p");
     
-    runApp(port, pathToFile);
+    runApp(port, pathToFile,pathToEsstee);
     return 0;
 }

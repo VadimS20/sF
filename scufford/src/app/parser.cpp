@@ -1,7 +1,7 @@
 #include "parser.h"
 
 
-std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parse(std::string pathToFile){
+std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parse(std::string pathToFile,std::string& pathToEsstee){
     pugi::xml_document doc;
 
     pugi::xml_parse_result result = doc.load_file(pathToFile.c_str());
@@ -50,7 +50,9 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parse(std::string pathToFil
         } else if (type == "FBConsoleOut") {
             FBs.push_back(new FBConsoleOut(inputs, connections, next, name));
         } else {
-            std::cout << "Unknown function block type" << std::endl;
+            auto tempBlock=new FBConsoleOut(inputs,connections,next,name);
+            tempBlock->setPathToESSTEE(pathToEsstee);
+            FBs.push_back(tempBlock);
         }
         
     }
@@ -61,7 +63,7 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parse(std::string pathToFil
 
 
 
-std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parseFboot(std::string pathToFile){
+std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parseFboot(std::string pathToFile,std::string& pathToEsstee){
     std::stringstream xmlStream;
 
     std::string line;
@@ -146,7 +148,9 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parseFboot(std::string path
                     FBsMap[name]=new FBConsoleOut(inputs, conns, next, name);
                     FBs.push_back(FBsMap[name]);
                 } else {
-                    std::cout << "Unknown function block type: "<< type << std::endl;
+                    FBsMap[name]=new FBSt(inputs,conns,next,name);
+                    FBsMap[name]->setPathToESSTEE(pathToEsstee);
+                    FBs.push_back(FBsMap[name]);
                 }    
 
                 inputs.clear();

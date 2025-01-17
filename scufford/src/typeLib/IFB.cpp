@@ -27,6 +27,9 @@ std::string IFB::getName(){
     return this->FBname;
 }
 
+void IFB::setPathToESSTEE(std::string path){
+    this->pathToESSTEE=path;
+}
 void IFB::sentOutputs(){
 
 }

@@ -25,6 +25,13 @@ FetchContent_Declare(argparse
 )
 FetchContent_MakeAvailable(argparse)
 
+FetchContent_Declare(esstee
+  GIT_REPOSITORY https://github.com/zeux/pugixml.git
+  GIT_TAG        v1.14
+)
+FetchContent_MakeAvailable(pugixml)
+
+
 add_executable(SCUFFORD scufford.cpp)
 
 target_link_libraries(SCUFFORD pugixml::pugixml)

@@ -13,10 +13,11 @@
 #include "../typeLib/globalOutputsList.h"
 #include "../typeLib/modules/FBConsoleOut.h"
 #include "../typeLib/modules/FBSumOfTwo.h"
+#include "../typeLib/modules/FBSt.h"
 
 
 class Parser{
 public:
-    static std::pair<std::vector<IFB*>, GlobalOutputs*> parse(std::string pathToFile);
-    static std::pair<std::vector<IFB*>, GlobalOutputs*> parseFboot(std::string pathToFile);
+    static std::pair<std::vector<IFB*>, GlobalOutputs*> parse(std::string pathToFile,std::string& pathToEsstee);
+    static std::pair<std::vector<IFB*>, GlobalOutputs*> parseFboot(std::string pathToFile,std::string& pathToEsstee);
 };

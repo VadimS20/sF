@@ -45,9 +45,30 @@ int Server::server(int port){
         return 1;
     }
 
+
     int bytes_read;
-    while ((bytes_read = read(new_socket, buffer, BUFFER_SIZE)) > 0) {
+    std::string response="<Response ID=\"1\" />";
+    uint16_t s=response.size();
+    auto sizes=sizeof(s);
+
+    bytes_read = read(new_socket, buffer, 1);
+    std::cout<<buffer<<" "<<bytes_read<<"\n";
+    uint16_t data=htons('P');
+    auto dataSize=sizeof(data);
+    send(new_socket,&data,dataSize,0);
+    send(new_socket,response.c_str(),response.size(),0);
+    while ((bytes_read = read(new_socket, buffer, 5)) > 0) {
+        std::cout<<buffer<<"\n";
         outfile.write(buffer, bytes_read);
+        
+    }
+    response="<Response ID=\"2\" />";
+    std::cout<<response<<"\n";
+    send(new_socket,response.c_str(),response.size(),0);
+    while ((bytes_read = read(new_socket, buffer, 1)) > 0) {
+        std::cout<<buffer<<" "<<bytes_read<<"\n";
+        outfile.write(buffer, bytes_read);
+        
     }
 
     std::cout << "Файл получен." << std::endl;
