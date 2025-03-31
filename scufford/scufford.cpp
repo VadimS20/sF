@@ -12,7 +12,8 @@
 
 #include <argparse/argparse.hpp>
 
-#include "./src/app/server.h"
+#include "./src/app/request_receiver.hpp"
+#include "./src/app/server.hpp"
 #include "./src/app/graph.h"
 #include "./src/app/parser.h"
 #include "./src/typeLib/IFB.h"
@@ -49,8 +50,62 @@ void runApp(int &port, std::string &pathToFile, std::string &pathToEsstee){
 
     while (1)
     {
-        std::thread serv(Server::server, port);
+        std::string err;
+
+        Server server(port,err);
+        //
         
+        std::string erorr_message;
+
+        server.WaitForConnection(erorr_message);
+        std::cout << erorr_message << std::endl;
+
+        ErrorCode error;
+
+        // Открываем файл для записи (режим добавления в конец файла)
+        std::ofstream outfile("recieved_data.fboot", std::ios::app);
+
+        while (true) {
+            auto received_request = ReceiveRequest(server, error).value();
+            if (received_request.xml_string.length() == 1) {
+                std::cout << "CONNECTION CLOSED" << '\n';
+                break;
+            }
+
+            // Записываем полученные данные в файл
+            outfile << received_request.xml_string << std::endl;
+
+            pugi::xml_document doc;
+            pugi::xml_parse_result result = doc.load_string(received_request.xml_string.c_str());
+
+            pugi::xml_node root = doc.document_element();
+
+            if (std::string(root.attribute("Action").as_string()) == "CREATE") {
+                pugi::xml_node child = root.first_child();
+                std::cout << std::string(child.name()) << std::endl;
+            }
+
+            pugi::xml_attribute id_attribute = root.attribute("ID");
+            uint response_index = id_attribute.as_uint();
+
+            std::string respose = "<Response ID=\"" + std::to_string(response_index) + "\" />";
+            server.Send<char>('P');
+            server.Send<uint16_t>(respose.size());
+            server.SendString(respose);
+            std::cout << "Sent response: " << respose << '\n';
+
+            std::cout << "\n\n";
+
+            std::cout << "Received request: " << received_request.xml_string << '\n';
+        }
+
+
+        outfile.close();
+
+        
+        //std::thread serv(server.Start());
+        server.Start();
+
         if (std::filesystem::exists("./received_file.xml")) {
             std::cerr<<"File received"<<std::endl;
             if (appThread.joinable()) {
@@ -71,7 +126,7 @@ void runApp(int &port, std::string &pathToFile, std::string &pathToEsstee){
             isGraph = true;
             appThread = std::thread(graphExecution, "received_file.fboot", std::ref(isGraph),pathToEsstee);
         }
-        serv.join();
+        //serv.join();
     }
 }
 
