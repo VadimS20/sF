@@ -1,6 +1,4 @@
-#ifndef FORTRESS_SERVER_HPP_
-#define FORTRESS_SERVER_HPP_
-#include "request_receiver.hpp"
+#pragma once
 
 #include <string>
 #include <cstdint>
@@ -9,11 +7,13 @@
 #include <fstream>
 #include <pugixml.hpp>  
 #include <string>     
+#include <optional>
 
-class Server {
+
+class ServerSF {
   public:
-    Server(uint16_t port, std::string& error_message);
-    ~Server();
+    ServerSF(uint16_t port, std::string& error_message);
+    ~ServerSF();
 
     void WaitForConnection(std::string& error_message);
     template <typename T>
@@ -22,7 +22,7 @@ class Server {
     void Send(T data) const;
     std::string ReceiveString(size_t length) const;
     void SendString(const std::string& str) const;
-    void Start();
+    void Start(){};
 
   private:
     int connection_socket_;
@@ -31,6 +31,17 @@ class Server {
     ssize_t ReceiveBytes(char* buffer, size_t length) const;
 };
 
-#include "server_impl.hpp"
 
-#endif 
+
+
+enum class ErrorCode {
+  NO_ERRORS,
+  WRONG_START_OF_RESOURCE_NAME,
+};
+
+struct RawRequest {
+  std::string resource_name;
+  std::string xml_string;
+};
+
+std::optional<RawRequest> ReceiveRequest(const ServerSF& server, ErrorCode& error);

@@ -7,13 +7,12 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <filesystem>
-#include <thread>
+//#include <thread>
 #include <stop_token>
 
 #include <argparse/argparse.hpp>
 
-#include "./src/app/request_receiver.hpp"
-#include "./src/app/server.hpp"
+#include "./src/app/serverSF.h"
 #include "./src/app/graph.h"
 #include "./src/app/parser.h"
 #include "./src/typeLib/IFB.h"
@@ -42,17 +41,17 @@ void graphExecution(std::string xmlFile, std::atomic_bool& isGraph, std::string&
 }
 
 void runApp(int &port, std::string &pathToFile, std::string &pathToEsstee){
-    std::thread appThread;
+    //std::thread appThread;
     std::atomic_bool isGraph(true);
-    if (pathToFile != ""){
-        appThread = std::thread(graphExecution, pathToFile, std::ref(isGraph), pathToEsstee);
-    }
+    // if (pathToFile != ""){
+    //     appThread = std::thread(graphExecution, pathToFile, std::ref(isGraph), pathToEsstee);
+    // }
 
     while (1)
     {
         std::string err;
 
-        Server server(port,err);
+        ServerSF server(port,err);
         //
         
         std::string erorr_message;
@@ -106,26 +105,26 @@ void runApp(int &port, std::string &pathToFile, std::string &pathToEsstee){
         //std::thread serv(server.Start());
         server.Start();
 
-        if (std::filesystem::exists("./received_file.xml")) {
-            std::cerr<<"File received"<<std::endl;
-            if (appThread.joinable()) {
-                isGraph = false;
-                appThread.detach();
-                std::this_thread::sleep_for(std::chrono::seconds(1));
-            }
-            isGraph = true;
-            appThread = std::thread(graphExecution, "received_file.xml", std::ref(isGraph),pathToEsstee);
-        }
-        if (std::filesystem::exists("./received_file.fboot")) {
-            std::cerr<<"File received"<<std::endl;
-            if (appThread.joinable()) {
-                isGraph = false;
-                appThread.detach();
-                std::this_thread::sleep_for(std::chrono::seconds(1));
-            }
-            isGraph = true;
-            appThread = std::thread(graphExecution, "received_file.fboot", std::ref(isGraph),pathToEsstee);
-        }
+        // if (std::filesystem::exists("./received_file.xml")) {
+        //     std::cerr<<"File received"<<std::endl;
+        //     if (appThread.joinable()) {
+        //         isGraph = false;
+        //         appThread.detach();
+        //         std::this_thread::sleep_for(std::chrono::seconds(1));
+        //     }
+        //     isGraph = true;
+        //     appThread = std::thread(graphExecution, "received_file.xml", std::ref(isGraph),pathToEsstee);
+        // }
+        // if (std::filesystem::exists("./received_file.fboot")) {
+        //     std::cerr<<"File received"<<std::endl;
+        //     if (appThread.joinable()) {
+        //         isGraph = false;
+        //         appThread.detach();
+        //         std::this_thread::sleep_for(std::chrono::seconds(1));
+        //     }
+        //     isGraph = true;
+        //     appThread = std::thread(graphExecution, "received_file.fboot", std::ref(isGraph),pathToEsstee);
+        // }
         //serv.join();
     }
 }
