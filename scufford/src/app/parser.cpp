@@ -129,21 +129,34 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parseFboot(std::string path
                 }
                 pugi::xml_node connection=request.child("Connection");
                 if(connection){
-                    name="";
-                    type="";
-                    std::string source = connection.attribute("Source").as_string();
-                    std::string destination = connection.attribute("Destination").as_string();
-                    if(source.find("START")!=std::string::npos){
-                        start=destination.substr(0,destination.length()-4);
-                    }else{
-                        inputs[destination]="";
-                        conns[destination]=source;
-                        outputs[source]="";
+                    if (std::string(connection.text().as_string()).find("REQ") == std::string::npos){
+                        std::cerr << "\nbiden\n\n";
+                        std::string source = connection.attribute("Source").as_string();
+                        std::string destination = connection.attribute("Destination").as_string();
+                        if(source.find(".")==std::string::npos){
+                            inputs[destination]=source;
+                        }else{
+                            inputs[destination]="";
+                            conns[destination]=source;
+                            outputs[source]="";
+                        }
+                        
+                    }  else{
+                        name="";
+                        type="";
+                        std::string source = connection.attribute("Source").as_string();
+                        std::string destination = connection.attribute("Destination").as_string();
+                        if(source.find("START")!=std::string::npos){
+                            start=destination.substr(0,destination.length()-4);
+                        }else{
+                            inputs[destination]="";
+                            conns[destination]=source;
+                            outputs[source]="";
+                        }
+                        if(source.find(".CNF")!=std::string::npos){
+                            FBsMap[source.substr(0,source.length()-4)]->addNext(destination);
+                        }
                     }
-                    if(source.find(".CNF")!=std::string::npos){
-                        FBsMap[source.substr(0,source.length()-4)]->addNext(destination);
-                    }
-
                 }
 
 
