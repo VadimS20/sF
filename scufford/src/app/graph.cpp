@@ -21,11 +21,22 @@ void Graph::BFS(std::atomic_bool& isGraph){
 
         auto inputs = block->getInputs();
 
+        // for(const auto a:inputs){
+        //     std::cout<<a.first<<" "<<a.second<<"\n";
+        // }
+        //std::cout<<"popo4ka"<<"\n";
+
         auto newInputs = inputs;
 
         std::map<std::string, std::string> connections=block->getConnections();
 
-        
+        // for(const auto& c:connections){
+        //     std::cout<<c.first<<" "<<c.second<<"\n";
+        // }
+
+        // for(const auto& c:outputs){
+        //     std::cout<<c.first<<" "<<c.second<<"\n";
+        // }
 
         for(const auto& input:inputs){
             if(outputs[connections[input.first]]!=""){

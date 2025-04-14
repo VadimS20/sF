@@ -45,7 +45,7 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parse(std::string pathToFil
             }
         }
 
-        if (type == "FBSumOfTwo") {
+        if (type == "FBSumOfTwo" ) {
             FBs.push_back(new FBSumOfTwo(inputs, connections, next, name));
         } else if (type == "FBConsoleOut") {
             FBs.push_back(new FBConsoleOut(inputs, connections, next, name));
@@ -68,29 +68,31 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parseFboot(std::string path
 
     std::string line;
     std::cout<<pathToFile<<"\n";
-    std::ifstream in(pathToFile); 
+    std::ifstream in(pathToFile, std::ios::binary);
+    int i=0; 
     if (in.is_open())
     {
         while (std::getline(in, line)) {
+            std::cout<<1<<"\n";
             if (line.find("<Request") != std::string::npos) {
-                // size_t pos = line.find("^@");
-                // while (pos != std::string::npos) {
-                //     line.erase(pos, 2);
-                //     pos = line.find("^@");
-                // }
-                std::cout<<1<<"\n";
-                std::cout<<line<<"\n";
+                // Удаляем все вхождения "^@" (или \x00)
+                line.erase(std::remove(line.begin(), line.end(), '\x00'), line.end());
+                line.erase(std::remove(line.begin(), line.end(), '\x00'), line.end());
+
                 xmlStream << line << "\n";
             }
+            std::cout<<2<<"\n";
         }
+
     }
-    std::cout<<1;
     in.close(); 
+    std::cout<<4;
+    
 
     std::cout<<1;
 
     std::string xmlContent=xmlStream.str();
-    //std::cout<<xmlContent<<"\n";
+    std::cout<<xmlContent<<"\n";
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_string(xmlContent.c_str());
@@ -150,12 +152,21 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parseFboot(std::string path
                 
                 std::vector<std::string> next;
 
+                // if(type.find(".")!=std::string::npos){
+                //     type=type.substr()
+                // }
+
+                std::cout<<type<<"\n";    
+
                 if (type == "FBSumOfTwo" || type=="F_ADD") {            
                     FBsMap[name]=new FBSumOfTwo(inputs, conns, next, name);        
                     FBs.push_back(FBsMap[name]);
-                } else if (type == "FBConsoleOut") {
+                    std::cout<<"zhopa\n";
+                } else if (type == "FBConsoleOut" || type=="OUT_ANY_CONSOLE") {
+                    // std::map<std::string,std::string> eshkere={{"IN",""}};
                     FBsMap[name]=new FBConsoleOut(inputs, conns, next, name);
                     FBs.push_back(FBsMap[name]);
+                    std::cout<<"popa\n";
                 } else {
                     FBsMap[name]=new FBSt(inputs,conns,next,name);
                     FBsMap[name]->setPathToESSTEE(pathToEsstee);
@@ -217,11 +228,17 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parseFboot(std::string path
         }
     }
 
+    for(const auto a:inputs){
+        std::cout<<a.first<<" "<<a.second<<"\n";
+    }
+
     iter_swap(FBs.begin(),FBs.begin()+startId);
 
     GlobalOutputs* Output = GlobalOutputs::getInstance(outputs);
 
     remove("received_file.fboot");
 
-    return std::make_pair(FBs, Output);    
+    //std::cout<<7<<"\n";
+    return std::make_pair(FBs, Output);
+        
 }

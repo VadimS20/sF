@@ -126,7 +126,7 @@ void ServerSF::Start(){
         ErrorCode error;
 
         // Открываем файл для записи (режим добавления в конец файла)
-        std::ofstream outfile("received_data.fboot");
+        std::ofstream outfile("received_data.fboot",std::ios::binary);
 
         while (true) {
             auto received_request = ReceiveRequest(*this, error).value();
@@ -136,7 +136,8 @@ void ServerSF::Start(){
             }
 
             // Записываем полученные данные в файл
-            outfile << received_request.xml_string << "\n";
+            outfile << received_request.xml_string<< "\n";
+            std::cout<< received_request.xml_string << "\n";
 
             pugi::xml_document doc;
             pugi::xml_parse_result result = doc.load_string(received_request.xml_string.c_str());
@@ -169,7 +170,7 @@ void ServerSF::Start(){
 
 std::string ServerSF::ReceiveString(size_t length) const
 {
-    std::string received_string(length + 1, '\0'); // Pre-allocate string with the desired length
+    std::string received_string(length+1 , '\0'); // Pre-allocate string with the desired length
 
     size_t number_of_left_bytes = length;
     char* data_ptr = received_string.data();

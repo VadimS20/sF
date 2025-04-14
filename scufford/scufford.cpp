@@ -33,10 +33,13 @@ void graphExecution(std::string xmlFile, std::atomic_bool& isGraph, std::string 
     auto all=pair.first;
     auto agregtor=pair.second;
 
+    std::cout<<35<<"\n";
     std::vector<IFB*> start = {};
     start.push_back(all[0]);
     auto graph=new Graph(start,all,agregtor);
+    std::cout<<36<<"\n";
     graph->BFS(isGraph);
+    std::cout<<43<<"\n";
     graph->~Graph();
 }
 
@@ -55,7 +58,7 @@ void runApp(int &port, std::string &pathToFile, std::string &pathToEsstee){
         
         std::thread serv(&ServerSF::Start, &server);
         
-        
+        serv.join();
 
         if (std::filesystem::exists("received_file.xml")) {
             std::cerr<<"File received"<<std::endl;
@@ -76,9 +79,10 @@ void runApp(int &port, std::string &pathToFile, std::string &pathToEsstee){
             }
             isGraph = true;
             appThread = std::thread(graphExecution, "received_data.fboot", std::ref(isGraph),pathToEsstee);
+
         }
         
-        serv.join();
+        
     }
 }
 

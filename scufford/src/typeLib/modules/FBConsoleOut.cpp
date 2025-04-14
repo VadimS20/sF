@@ -4,7 +4,7 @@
 
 void FBConsoleOut::execute(GlobalOutputs* outputs){
     for(const auto p:inputs){
-        std::cout << p.first << ": " << p.second << std::endl;
+        //std::cout << p.first << ": " << p.second << std::endl;
         
     }
 }
