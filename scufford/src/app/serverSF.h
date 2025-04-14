@@ -22,7 +22,7 @@ class ServerSF {
     void Send(T data) const;
     std::string ReceiveString(size_t length) const;
     void SendString(const std::string& str) const;
-    void Start(){};
+    void Start();
 
   private:
     int connection_socket_;

@@ -117,6 +117,56 @@ ssize_t ServerSF::ReceiveBytes(char* buffer, size_t length) const
     return 0;
 }
 
+void ServerSF::Start(){
+        std::string erorr_message;
+
+        WaitForConnection(erorr_message);
+        std::cout << erorr_message << std::endl;
+
+        ErrorCode error;
+
+        // Открываем файл для записи (режим добавления в конец файла)
+        std::ofstream outfile("received_data.fboot");
+
+        while (true) {
+            auto received_request = ReceiveRequest(*this, error).value();
+            if (received_request.xml_string.length() == 1) {
+                std::cout << "CONNECTION CLOSED" << '\n';
+                break;
+            }
+
+            // Записываем полученные данные в файл
+            outfile << received_request.xml_string << "\n";
+
+            pugi::xml_document doc;
+            pugi::xml_parse_result result = doc.load_string(received_request.xml_string.c_str());
+
+            pugi::xml_node root = doc.document_element();
+
+            if (std::string(root.attribute("Action").as_string()) == "CREATE") {
+                pugi::xml_node child = root.first_child();
+                //std::cout << std::string(child.name()) << std::endl;
+            }
+
+            pugi::xml_attribute id_attribute = root.attribute("ID");
+            uint response_index = id_attribute.as_uint();
+
+            std::string respose = "<Response ID=\"" + std::to_string(response_index) + "\" />";
+            Send<char>('P');
+            Send<uint16_t>(respose.size());
+            SendString(respose);
+            //std::cout << "Sent response: " << respose << '\n';
+
+            //std::cout << "\n\n";
+
+            //std::cout << "Received request: " << received_request.xml_string << '\n';
+        }
+
+
+        outfile.close();
+
+}
+
 std::string ServerSF::ReceiveString(size_t length) const
 {
     std::string received_string(length + 1, '\0'); // Pre-allocate string with the desired length

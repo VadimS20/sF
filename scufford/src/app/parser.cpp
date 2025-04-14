@@ -67,25 +67,34 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parseFboot(std::string path
     std::stringstream xmlStream;
 
     std::string line;
- 
+    std::cout<<pathToFile<<"\n";
     std::ifstream in(pathToFile); 
     if (in.is_open())
     {
-        while (std::getline(in, line, ';')) {
+        while (std::getline(in, line)) {
             if (line.find("<Request") != std::string::npos) {
+                // size_t pos = line.find("^@");
+                // while (pos != std::string::npos) {
+                //     line.erase(pos, 2);
+                //     pos = line.find("^@");
+                // }
+                std::cout<<1<<"\n";
+                std::cout<<line<<"\n";
                 xmlStream << line << "\n";
             }
         }
     }
+    std::cout<<1;
     in.close(); 
 
-
+    std::cout<<1;
 
     std::string xmlContent=xmlStream.str();
+    //std::cout<<xmlContent<<"\n";
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_string(xmlContent.c_str());
-
+    std::cout<<1;
     if (!result) {
         std::cerr << "Failed to parse XML: " << result.description() << std::endl;
         
@@ -101,7 +110,7 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parseFboot(std::string path
 
     std::string name="";
     std::string type="";
-
+    std::cout<<1;
     for (pugi::xml_node request = doc.child("Request"); request; request = request.next_sibling("Request")) {
         std::string id = request.attribute("ID").as_string();
         std::string action = request.attribute("Action").as_string();
@@ -141,7 +150,7 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parseFboot(std::string path
                 
                 std::vector<std::string> next;
 
-                if (type == "FBSumOfTwo") {            
+                if (type == "FBSumOfTwo" || type=="F_ADD") {            
                     FBsMap[name]=new FBSumOfTwo(inputs, conns, next, name);        
                     FBs.push_back(FBsMap[name]);
                 } else if (type == "FBConsoleOut") {
