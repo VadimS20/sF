@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(SCUFFORD VERSION 0.1.0)
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0 -Wall")
+
 add_subdirectory(src)
 include_directories(
     "./",
