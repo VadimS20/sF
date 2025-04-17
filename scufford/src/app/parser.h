@@ -13,6 +13,7 @@
 #include "../typeLib/globalOutputsList.h"
 #include "../typeLib/modules/FBConsoleOut.h"
 #include "../typeLib/modules/FBSumOfTwo.h"
+#include "../typeLib/modules/BasicSTFB.h"
 
 
 class Parser{

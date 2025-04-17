@@ -62,6 +62,8 @@ std::pair<std::vector<IFB*>, GlobalOutputs*> Parser::parse(std::string pathToFil
             FBs.push_back(new FBSumOfTwo(inputs, connections, next, name));
         } else if (type == "FBConsoleOut") {
             FBs.push_back(new FBConsoleOut(inputs, connections, next, name));
+        } else if (type == "BasicSTFB") {
+            FBs.push_back(new BasicSTFB(inputs, connections, next, name));
         } else {
             std::cout << "Unknown function block type" << std::endl;
         }
