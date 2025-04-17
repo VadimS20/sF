@@ -1,12 +1,12 @@
 #include "BasicSTFB.h"
 
 void BasicSTFB::execute(GlobalOutputs* outputs){
-    std::string command = "./StInterpreter/INTERPRETER --file \"./StBlocks/" + this->FBname + ".st\" --program=\"testprgm\" --pre-run-queries=\"";
+    std::string command = "./STInterpreter/INTERPRETER --file=\"./STBlocks/" + this->FBname + ".st\" --program=\"execute\" --pre-run-queries=\"";
     int in_num = 1;
     std::string post_querry = "\" --post-run-queries=\"";
     for(const auto p : this->inputs){
-        command += "[execute].input" + std::to_string(in_num) + " := " + p.second + ";";
-        post_querry += "[execute].output" + std::to_string(in_num) + " := " + p.second + ";";
+        command += "[execute].input" + std::to_string(in_num) + " := " + p.second + " ";
+        post_querry += "[execute].output" + std::to_string(in_num) + " ";
         in_num++;
     }
     command += post_querry + "\"";
@@ -19,8 +19,10 @@ void BasicSTFB::execute(GlobalOutputs* outputs){
     }
     
     char buffer[128];
+    std::string lastLine;
+    
     while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-        std::cout << buffer;
+        lastLine = buffer;
     }
     
     int status = pclose(pipe);
@@ -29,7 +31,9 @@ void BasicSTFB::execute(GlobalOutputs* outputs){
     } else {
         std::cout << "Команда завершилась с кодом: " << status << std::endl;
     }
-
-    std::string buffer_str(buffer);
-    outputs->setOutput(this->FBname+".OUT", buffer_str);
+    
+    outputs->setOutput(this->FBname+".OUT", lastLine);
 }
+
+
+// ./STInterpreter/INTERPRETER  --file="./STBlocks/sqrtST.ST" --program="execute" --pre-run-queries="[execute].input1:=3.14" --post-run-queries="[execute].output1"

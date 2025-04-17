@@ -4,5 +4,5 @@ VAR
     output1: REAL;
 END_VAR
 
-output1 := SIN(input1);
+output1 := input1 * input1;
 END_PROGRAM
