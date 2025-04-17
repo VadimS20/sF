@@ -1,4 +1,4 @@
-#include "../../IFB.h"
+#include "../IFB.h"
 
 class BasicSTFB : public IFB {
 private:

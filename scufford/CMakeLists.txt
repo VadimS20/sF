@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(SCUFFORD VERSION 0.1.0)
+project(Sf VERSION 0.1.0)
 
 add_subdirectory(src)
 include_directories(
@@ -25,8 +25,8 @@ FetchContent_Declare(argparse
 )
 FetchContent_MakeAvailable(argparse)
 
-add_executable(SCUFFORD scufford.cpp)
+add_executable(Sf Sf.cpp)
 
-target_link_libraries(SCUFFORD pugixml::pugixml)
-target_link_libraries(SCUFFORD argparse::argparse)
-target_link_libraries(SCUFFORD App TypeLib Modules)
+target_link_libraries(Sf pugixml::pugixml)
+target_link_libraries(Sf argparse::argparse)
+target_link_libraries(Sf App TypeLib Modules)

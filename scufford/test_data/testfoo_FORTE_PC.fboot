@@ -7,4 +7,5 @@ EMB_RES;<Request ID="6" Action="WRITE"><Connection Source="2" Destination="testf
 EMB_RES;<Request ID="7" Action="CREATE"><Connection Source="testfooApp.FBSumOfTwo.CNF" Destination="testfooApp.FBConsoleOut.REQ" /></Request>
 EMB_RES;<Request ID="8" Action="CREATE"><Connection Source="testfooApp.FBConsoleOut.CNF" Destination="testfooApp.FBSumOfTwo.REQ" /></Request>
 EMB_RES;<Request ID="9" Action="CREATE"><Connection Source="START.COLD" Destination="testfooApp.FBSumOfTwo.REQ" /></Request>
+EMB_RES;<Request ID="11" Action="CREATE"><FB Name="testfooApp.sqrtST" Type="BasicSTFB" /></Request>
 EMB_RES;<Request ID="`0" Action="START"/>
